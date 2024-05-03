@@ -15,9 +15,10 @@
 @interface YTMainAppControlsOverlayView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 - (void)didPressYouTimeStamp:(id)arg;
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTime:(NSString *)timeString;
 - (NSInteger)timeToSeconds:(NSString *)timeString;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
+- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
+- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
 @property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 @end
@@ -25,9 +26,10 @@
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 - (void)didPressYouTimeStamp:(id)arg;
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTime:(NSString *)timeString;
 - (NSInteger)timeToSeconds:(NSString *)timeString;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
+- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
+- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
 @property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 @end
