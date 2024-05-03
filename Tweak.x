@@ -91,31 +91,25 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 %new(v@:@)
 - (void)didPressYouTimeStamp:(id)arg {
-    if ([self respondsToSelector:@selector(currentTimeLabel)]) {
+    if (self.currentTimeLabel && self.videoShareURL) {
         NSString *currentTime = self.currentTimeLabel.text;
-        if (currentTime && [self respondsToSelector:@selector(videoShareURL)]) {
-            NSString *videoShareURL = self.videoShareURL;
-            [self copyModifiedURLToClipboard:videoShareURL withTime:currentTime];
-        }
+        NSString *videoShareURL = self.videoShareURL;
+        NSString *modifiedURL = [self createModifiedURL:videoShareURL withTime:currentTime];
+        [self copyURLToClipboard:modifiedURL];
         [self.timestampButton setImage:timestampImage(@"3") forState:0];
     } else {
-        // Handle unrecognized selector error gracefully
-        NSLog(@"currentTimeLabel is not available");
+        NSLog(@"currentTimeLabel or videoShareURL is not available");
     }
-}
-- (NSString *)currentTimeString {
-    if (self.currentTimeLabel) {
-        return self.currentTimeLabel.text;
-    }
-    return nil;
 }
 
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTime:(NSString *)timeString {
+- (NSString *)createModifiedURL:(NSString *)originalURL withTime:(NSString *)timeString {
     NSInteger seconds = [self timeToSeconds:timeString];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?t=%lds", originalURL, (long)seconds]];
-    
+    return [NSString stringWithFormat:@"%@?t=%lds", originalURL, (long)seconds];
+}
+
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:url.absoluteString];
+    [pasteboard setString:modifiedURL];
     [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
 }
 
