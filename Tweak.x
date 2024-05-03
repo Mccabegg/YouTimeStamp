@@ -14,8 +14,10 @@
 @interface YTMainAppControlsOverlayView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 - (void)didPressYouTimeStamp:(id)arg;
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTime:(NSString *)timeString;
 - (NSInteger)timeToSeconds:(NSString *)timeString;
+- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTime:(NSString *)timeString; // Deprecated
+- (NSString *)createModifiedURL:(NSString *)originalURL withTime:(NSString *)timeString;
+- (void)copyURLToClipboard:(NSString *)modifiedURL;
 @property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 @end
