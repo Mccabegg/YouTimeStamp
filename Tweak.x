@@ -14,6 +14,7 @@
 
 @interface YTMainAppControlsOverlayView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
+- (AVPlayer *)player;
 - (void)didPressYouTimeStamp:(id)arg;
 - (NSInteger)timeToSeconds:(NSString *)timeString;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
@@ -25,6 +26,7 @@
 
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
+- (AVPlayer *)player;
 - (void)didPressYouTimeStamp:(id)arg;
 - (NSInteger)timeToSeconds:(NSString *)timeString;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
