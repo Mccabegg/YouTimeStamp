@@ -96,7 +96,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 %new(v@:@)
 - (void)didPressYouTimeStamp:(id)arg {
-    AVPlayer *player;
+    AVPlayer *player = [self player];
     if (player && self.videoShareURL) {
         [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
         [self.timestampButton setImage:timestampImage(@"3") forState:0];
@@ -105,21 +105,21 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     }
 }
 
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
-    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL]; 
-    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
-}
-
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
     CMTime currentTime = player.currentTime;
     NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
     NSInteger minutes = timeInterval / 60;
     NSInteger seconds = (NSInteger)timeInterval % 60;
-    return [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
+    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+}
+
+- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
+    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
+    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:modifiedURL];
+    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
 }
 
 %end
@@ -148,7 +148,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 %new(v@:@)
 - (void)didPressYouTimeStamp:(id)arg {
-    AVPlayer *player;
+    AVPlayer *player = [self player];
     if (player && self.videoShareURL) {
         [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
         [self.timestampButton setImage:timestampImage(@"3") forState:0];
@@ -157,21 +157,21 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     }
 }
 
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
-    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL]; 
-    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
-}
-
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
     CMTime currentTime = player.currentTime;
     NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
     NSInteger minutes = timeInterval / 60;
     NSInteger seconds = (NSInteger)timeInterval % 60;
-    return [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
+    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+}
+
+- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
+    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
+    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:modifiedURL];
+    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
 }
 
 %end
