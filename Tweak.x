@@ -99,7 +99,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 %new(v@:@)
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self player];
-    if (player && self.videoShareURL) {
+    if ([player respondsToSelector:@selector(player)] && self.videoShareURL) {
         [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
         [self.timestampButton setImage:timestampImage(@"3") forState:0];
     } else {
@@ -151,7 +151,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 %new(v@:@)
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self player];
-    if (player && self.videoShareURL) {
+    if ([player respondsToSelector:@selector(player)] && self.videoShareURL) {
         [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
         [self.timestampButton setImage:timestampImage(@"3") forState:0];
     } else {
