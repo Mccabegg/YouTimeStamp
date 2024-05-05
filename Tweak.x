@@ -16,24 +16,12 @@
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 - (AVPlayer *)player;
 - (void)didPressYouTimeStamp:(id)arg;
-- (NSInteger)timeToSeconds:(NSString *)timeString;
-- (void)copyURLToClipboard:(NSString *)modifiedURL;
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
-- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
-@property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
-@property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 @end
 
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 - (AVPlayer *)player;
 - (void)didPressYouTimeStamp:(id)arg;
-- (NSInteger)timeToSeconds:(NSString *)timeString;
-- (void)copyURLToClipboard:(NSString *)modifiedURL;
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
-- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
-@property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
-@property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 @end
 
 // For displaying snackbars - @theRealfoxster
@@ -52,6 +40,114 @@
 + (id)sharedInstance;
 @end
 //
+
+@implementation YTMainAppControlsOverlayView (YouTimeStamp)
+
+- (void)didPressYouTimeStamp:(id)arg {
+    AVPlayer *player = [self player];
+    if (!player) {
+        NSLog(@"AVPlayer instance is not available.");
+        return;
+    }
+    
+    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+    if (!currentTime || currentTime.length == 0) {
+        NSLog(@"Failed to get current time from AVPlayer.");
+        return;
+    }
+    
+    NSString *videoShareURL = self.videoShareURL;
+    if (!videoShareURL || videoShareURL.length == 0) {
+        NSLog(@"Video share URL is not available.");
+        return;
+    }
+
+    NSString *modifiedURL = [self addTimestampToURL:videoShareURL currentTime:currentTime];
+    [self copyURLToClipboard:modifiedURL];
+    
+    [[GOOHUDManagerInternal sharedInstance] showMessageMainThread:[YTHUDMessage messageWithText:@"Successfully copied URL with Timestamp"]];
+}
+
+- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
+    if (!player.currentItem) {
+        return nil;
+    }
+    CMTime currentTime = player.currentItem.currentTime;
+    if (CMTIME_IS_INVALID(currentTime)) {
+        return nil;
+    }
+    
+    NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+    NSInteger minutes = timeInterval / 60;
+    NSInteger seconds = (NSInteger)timeInterval % 60;
+    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+}
+
+- (NSString *)addTimestampToURL:(NSString *)url currentTime:(NSString *)currentTime {
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
+    return [url stringByAppendingString:timestampString];
+}
+
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:modifiedURL];
+}
+
+@end
+
+@implementation YTInlinePlayerBarContainerView (YouTimeStamp)
+
+- (void)didPressYouTimeStamp:(id)arg {
+    AVPlayer *player = [self player];
+    if (!player) {
+        NSLog(@"AVPlayer instance is not available.");
+        return;
+    }
+    
+    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+    if (!currentTime || currentTime.length == 0) {
+        NSLog(@"Failed to get current time from AVPlayer.");
+        return;
+    }
+    
+    NSString *videoShareURL = self.videoShareURL;
+    if (!videoShareURL || videoShareURL.length == 0) {
+        NSLog(@"Video share URL is not available.");
+        return;
+    }
+
+    NSString *modifiedURL = [self addTimestampToURL:videoShareURL currentTime:currentTime];
+    [self copyURLToClipboard:modifiedURL];
+    
+    [[GOOHUDManagerInternal sharedInstance] showMessageMainThread:[YTHUDMessage messageWithText:@"Successfully copied URL with Timestamp"]];
+}
+
+- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
+    if (!player.currentItem) {
+        return nil;
+    }
+    CMTime currentTime = player.currentItem.currentTime;
+    if (CMTIME_IS_INVALID(currentTime)) {
+        return nil;
+    }
+    
+    NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+    NSInteger minutes = timeInterval / 60;
+    NSInteger seconds = (NSInteger)timeInterval % 60;
+    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+}
+
+- (NSString *)addTimestampToURL:(NSString *)url currentTime:(NSString *)currentTime {
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
+    return [url stringByAppendingString:timestampString];
+}
+
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:modifiedURL];
+}
+
+@end
 
 NSBundle *YouTimeStampBundle() {
     static NSBundle *bundle = nil;
