@@ -99,6 +99,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     AVPlayer *player = [self getPlayer];
     if (player) {
         NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+        NSLog(@"Current Time: %@", currentTime);
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
             [self.timestampButton setImage:timestampImage(@"3") forState:0];
@@ -156,6 +157,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     AVPlayer *player = [self getPlayer];
     if (player) {
         NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+        NSLog(@"Current Time: %@", currentTime);
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
             [self.timestampButton setImage:timestampImage(@"3") forState:0];
