@@ -23,6 +23,7 @@
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
 @end
 
+@interface YTInlinePlayerBarContainerView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 @property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
