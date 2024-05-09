@@ -178,9 +178,13 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
     CMTime currentTime = player.currentTime;
     NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+    CMTime duration = player.currentItem.duration;
+    NSTimeInterval durationInSeconds = CMTimeGetSeconds(duration);
     NSInteger minutes = timeInterval / 60;
     NSInteger seconds = (NSInteger)timeInterval % 60;
-    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+    NSInteger totalMinutes = durationInSeconds / 60;
+    NSInteger totalSeconds = (NSInteger)durationInSeconds % 60;    
+    return [NSString stringWithFormat:@"Current Time: %02ldm%02lds, Total duration: %02ldm%02lds", (long)minutes, (long)seconds, (long)totalMinutes, (long)totalSeconds];
 }
 
 - (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
