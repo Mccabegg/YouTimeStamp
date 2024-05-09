@@ -100,13 +100,13 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     if (player) {
 //        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
         if (self.videoShareURL) {
-            [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
+            NSURL *videoURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://youtu.be/%@", self.videoID]];
+            [self copyModifiedURLToClipboard:videoURL withTimeFromAVPlayer:player];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self.timestampButton setImage:timestampImage(@"3") forState:0];
                 [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
             });
         } else {
-            [self copyURLToClipboard:self.videoShareURL];
             [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
         }
     } else {
@@ -114,20 +114,12 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     }
 }
 
-- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
-    CMTime currentTime = player.currentTime;
-    NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
-    NSInteger minutes = timeInterval / 60;
-    NSInteger seconds = (NSInteger)timeInterval % 60;
-    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
-}
-
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
+- (void)copyModifiedURLToClipboard:(NSURL *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
     NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
+    NSString *modifiedURL = [[originalURL absoluteString] stringByAppendingString:timestampString];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL];
+    [pasteboard setString:modifiedURL]; 
     [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
 }
 
@@ -161,13 +153,13 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     if (player) {
 //        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
         if (self.videoShareURL) {
-            [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
+            NSURL *videoURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://youtu.be/%@", self.videoID]];
+            [self copyModifiedURLToClipboard:videoURL withTimeFromAVPlayer:player];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self.timestampButton setImage:timestampImage(@"3") forState:0];
                 [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
             });
         } else {
-            [self copyURLToClipboard:self.videoShareURL];
             [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
         }
     } else {
@@ -175,18 +167,10 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     }
 }
 
-- (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
-    CMTime currentTime = player.currentTime;
-    NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
-    NSInteger minutes = timeInterval / 60;
-    NSInteger seconds = (NSInteger)timeInterval % 60;
-    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
-}
-
-- (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
+- (void)copyModifiedURLToClipboard:(NSURL *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
     NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [originalURL stringByAppendingString:timestampString];
+    NSString *modifiedURL = [[originalURL absoluteString] stringByAppendingString:timestampString];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [pasteboard setString:modifiedURL];
     [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
