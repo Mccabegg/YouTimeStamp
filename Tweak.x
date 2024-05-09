@@ -99,12 +99,15 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     AVPlayer *player = [self getPlayer];
     if (player) {
         NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-        NSLog(@"Current Time: %@", currentTime);
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
-            [self.timestampButton setImage:timestampImage(@"3") forState:0];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.timestampButton setImage:timestampImage(@"3") forState:0];
+                [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
+            });
         } else {
             [self copyURLToClipboard:self.videoShareURL];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
@@ -157,12 +160,15 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     AVPlayer *player = [self getPlayer];
     if (player) {
         NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-        NSLog(@"Current Time: %@", currentTime);
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
-            [self.timestampButton setImage:timestampImage(@"3") forState:0];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.timestampButton setImage:timestampImage(@"3") forState:0];
+                [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
+            });
         } else {
             [self copyURLToClipboard:self.videoShareURL];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
