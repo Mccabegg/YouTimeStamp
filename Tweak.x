@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 
 #import "../YTVideoOverlay/Header.h"
@@ -32,6 +33,11 @@
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
 - (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
+@end
+
+@interface YTMainAppVideoPlayerOverlayViewController (YouTimeStamp)
+@property (nonatomic, copy) NSString *videoID;
+- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp;
 @end
 
 // For displaying snackbars - @theRealfoxster
@@ -98,16 +104,20 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self getPlayer];
     if (player) {
-//        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-        if (self.videoShareURL) {
-            NSURL *videoURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://youtu.be/%@", self.videoID]];
-            [self copyModifiedURLToClipboard:videoURL withTimeFromAVPlayer:player];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.timestampButton setImage:timestampImage(@"3") forState:0];
-                [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
-            });
+        CMTime currentTime = player.currentTime;
+        NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+        NSInteger minutes = timeInterval / 60;
+        NSInteger seconds = (NSInteger)timeInterval % 60;
+        NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+        
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController = // Get reference to the video player overlay view controller
+        if (overlayViewController.videoID) {
+            NSString *modifiedURL = [overlayViewController generateModifiedURLWithTimestamp:timestamp];
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            [pasteboard setString:modifiedURL];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
         } else {
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video ID available"]];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
@@ -121,6 +131,16 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [pasteboard setString:modifiedURL]; 
     [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
+}
+
+%end
+
+%hook YTMainAppVideoPlayerOverlayViewController
+
+- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+    return [videoId stringByAppendingString:timestampString];
 }
 
 %end
@@ -151,16 +171,20 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self getPlayer];
     if (player) {
-//        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-        if (self.videoShareURL) {
-            NSURL *videoURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://youtu.be/%@", self.videoID]];
-            [self copyModifiedURLToClipboard:videoURL withTimeFromAVPlayer:player];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.timestampButton setImage:timestampImage(@"3") forState:0];
-                [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied with timestamp"]];
-            });
+        CMTime currentTime = player.currentTime;
+        NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+        NSInteger minutes = timeInterval / 60;
+        NSInteger seconds = (NSInteger)timeInterval % 60;
+        NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+        
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController = // Get reference to the video player overlay view controller
+        if (overlayViewController.videoID) {
+            NSString *modifiedURL = [overlayViewController generateModifiedURLWithTimestamp:timestamp];
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            [pasteboard setString:modifiedURL];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
         } else {
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video URL available"]];
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video ID available"]];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
@@ -174,6 +198,16 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [pasteboard setString:modifiedURL];
     [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
+}
+
+%end
+
+%hook YTMainAppVideoPlayerOverlayViewController
+
+- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+    return [videoId stringByAppendingString:timestampString];
 }
 
 %end
