@@ -98,7 +98,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self getPlayer];
     if (player) {
-        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+//        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -159,7 +159,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (void)didPressYouTimeStamp:(id)arg {
     AVPlayer *player = [self getPlayer];
     if (player) {
-        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
+//        NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
         if (self.videoShareURL) {
             [self copyModifiedURLToClipboard:self.videoShareURL withTimeFromAVPlayer:player];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -178,13 +178,9 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player {
     CMTime currentTime = player.currentTime;
     NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
-    CMTime duration = player.currentItem.duration;
-    NSTimeInterval durationInSeconds = CMTimeGetSeconds(duration);
     NSInteger minutes = timeInterval / 60;
     NSInteger seconds = (NSInteger)timeInterval % 60;
-    NSInteger totalMinutes = durationInSeconds / 60;
-    NSInteger totalSeconds = (NSInteger)durationInSeconds % 60;    
-    return [NSString stringWithFormat:@"Current Time: %02ldm%02lds, Total duration: %02ldm%02lds", (long)minutes, (long)seconds, (long)totalMinutes, (long)totalSeconds];
+    return [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
 }
 
 - (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
