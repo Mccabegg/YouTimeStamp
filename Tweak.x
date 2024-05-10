@@ -109,7 +109,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSInteger seconds = (NSInteger)timeInterval % 60;
         NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
 
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController = self;
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
         if (overlayViewController.videoID) {
             NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
@@ -181,7 +181,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSInteger seconds = (NSInteger)timeInterval % 60;
         NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
 
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController = self;
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
         if (overlayViewController.videoID) {
             NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
