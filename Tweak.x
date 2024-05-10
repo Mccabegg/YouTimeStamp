@@ -100,8 +100,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
 }
 
-%new(v@:@)
-- (void)didPressYouTimeStamp:(id)arg {
+- (void)didPressYouTimeStamp {
     AVPlayer *player = [self getPlayer];
     if (player) {
         CMTime currentTime = player.currentTime;
@@ -109,28 +108,31 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
         NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController = // Get reference to the video player overlay view controller
         if (overlayViewController.videoID) {
-            NSString *modifiedURL = [overlayViewController generateModifiedURLWithTimestamp:timestamp];
+            NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
+            NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+            NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
+            
             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
             [pasteboard setString:modifiedURL];
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Successfully copied URL with Timestamp" preferredStyle:UIAlertControllerStyleAlert];
+            [self presentViewController:alertController animated:YES completion:nil];
         } else {
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video ID available"]];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"No video ID available" preferredStyle:UIAlertControllerStyleAlert];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
     }
 }
 
-- (void)copyModifiedURLToClipboard:(NSURL *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
-    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [[originalURL absoluteString] stringByAppendingString:timestampString];
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL]; 
-    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
+    [pasteboard setString:modifiedURL];
 }
 
 %end
@@ -168,7 +170,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 }
 
 %new(v@:@)
-- (void)didPressYouTimeStamp:(id)arg {
+- (void)didPressYouTimeStamp {
     AVPlayer *player = [self getPlayer];
     if (player) {
         CMTime currentTime = player.currentTime;
@@ -176,28 +178,31 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
         NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+
+        YTMainAppVideoPlayerOverlayViewController *overlayViewController; // Get reference to the video player overlay view controller
         
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController = // Get reference to the video player overlay view controller
         if (overlayViewController.videoID) {
-            NSString *modifiedURL = [overlayViewController generateModifiedURLWithTimestamp:timestamp];
+            NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
+            NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+            NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
+            
             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
             [pasteboard setString:modifiedURL];
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
+           
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Successfully copied URL with Timestamp" preferredStyle:UIAlertControllerStyleAlert];
+            [self presentViewController:alertController animated:YES completion:nil];
         } else {
-            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"No video ID available"]];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"No video ID available" preferredStyle:UIAlertControllerStyleAlert];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
     }
 }
 
-- (void)copyModifiedURLToClipboard:(NSURL *)originalURL withTimeFromAVPlayer:(AVPlayer *)player {
-    NSString *currentTime = [self getCurrentTimeFromAVPlayer:player];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", currentTime];
-    NSString *modifiedURL = [[originalURL absoluteString] stringByAppendingString:timestampString];
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [pasteboard setString:modifiedURL];
-    [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"Successfully copied URL with Timestamp"]];
 }
 
 %end
