@@ -107,25 +107,18 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
-        NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+        NSString *timestamp = [NSString stringWithFormat:@"%ldm%lds", (long)minutes, (long)seconds];
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
         if (overlayViewController.videoID) {
-            NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
-            NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", overlayViewController.videoID];
+            NSString *timestampString = [NSString stringWithFormat:@"?t=%ld", (long)timeInterval];
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
             
-            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-            [pasteboard setString:modifiedURL];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Successfully copied URL with Timestamp"  preferredStyle:UIAlertControllerStyleAlert];
-            UIViewController *topViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [topViewController presentViewController:alertController animated:YES completion:nil];
+            [self shareURLWithTimestamp:modifiedURL];
         } else {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"No video ID available" preferredStyle:UIAlertControllerStyleAlert];
-            UIViewController *topViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [topViewController presentViewController:alertController animated:YES completion:nil];
+            NSLog(@"No video ID available");
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
@@ -179,25 +172,18 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
-        NSString *timestamp = [NSString stringWithFormat:@"%02ldm%02lds", (long)minutes, (long)seconds];
+        NSString *timestamp = [NSString stringWithFormat:@"%ldm%lds", (long)minutes, (long)seconds];
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
         if (overlayViewController.videoID) {
-            NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", overlayViewController.videoID];
-            NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", overlayViewController.videoID];
+            NSString *timestampString = [NSString stringWithFormat:@"?t=%ld", (long)timeInterval];
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
             
-            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-            [pasteboard setString:modifiedURL];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Successfully copied URL with Timestamp"  preferredStyle:UIAlertControllerStyleAlert];
-            UIViewController *topViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [topViewController presentViewController:alertController animated:YES completion:nil];
+            [self shareURLWithTimestamp:modifiedURL];
         } else {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"No video ID available" preferredStyle:UIAlertControllerStyleAlert];
-            UIViewController *topViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-            [topViewController presentViewController:alertController animated:YES completion:nil];
+            NSLog(@"No video ID available");
         }
     } else {
         NSLog(@"AVPlayer instance is not available");
