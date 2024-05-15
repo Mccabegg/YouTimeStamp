@@ -15,8 +15,8 @@
 
 @interface YTMainAppControlsOverlayView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
-@property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
-@property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
+@property (nonatomic, strong) YTLabel *currentTimeLabel;
+@property (nonatomic, copy) NSString *videoShareURL;
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
 - (void)shareURLWithTimestamp:(NSString *)timestamp;
@@ -27,8 +27,8 @@
 
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
-@property (nonatomic, strong) YTLabel *currentTimeLabel; // YTInlinePlayerBarContainerView
-@property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
+@property (nonatomic, strong) YTLabel *currentTimeLabel;
+@property (nonatomic, copy) NSString *videoShareURL;
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
 - (void)shareURLWithTimestamp:(NSString *)timestamp;
@@ -107,8 +107,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     if (player) {
         CMTime currentTime = player.currentTime;
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
-        NSInteger minutes = timeInterval / 60;
-        NSInteger seconds = (NSInteger)timeInterval % 60;
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
@@ -171,8 +169,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     if (player) {
         CMTime currentTime = player.currentTime;
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
-        NSInteger minutes = timeInterval / 60;
-        NSInteger seconds = (NSInteger)timeInterval % 60;
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
