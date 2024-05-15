@@ -19,6 +19,7 @@
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
+- (void)shareURLWithTimestamp:(NSString *)timestamp;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
 - (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
@@ -30,6 +31,7 @@
 @property (nonatomic, copy) NSString *videoShareURL; // YTIShareVideoEndpoint
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
+- (void)shareURLWithTimestamp:(NSString *)timestamp;
 - (void)copyURLToClipboard:(NSString *)modifiedURL;
 - (void)copyModifiedURLToClipboard:(NSString *)originalURL withTimeFromAVPlayer:(AVPlayer *)player;
 - (NSString *)getCurrentTimeFromAVPlayer:(AVPlayer *)player;
