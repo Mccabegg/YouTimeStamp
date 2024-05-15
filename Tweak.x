@@ -109,7 +109,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
-        NSString *timestamp = [NSString stringWithFormat:@"%ldm%lds", (long)minutes, (long)seconds];
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
@@ -174,7 +173,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
         NSInteger minutes = timeInterval / 60;
         NSInteger seconds = (NSInteger)timeInterval % 60;
-        NSString *timestamp = [NSString stringWithFormat:@"%ldm%lds", (long)minutes, (long)seconds];
 
         YTMainAppVideoPlayerOverlayViewController *overlayViewController;
         
