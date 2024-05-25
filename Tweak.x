@@ -109,7 +109,8 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
 }
 
-- (void)didPressYouTimeStamp {
+%new(v@:@)
+- (void)didPressYouTimeStamp:(id)arg {
     YTPlayerViewController *playerViewController = [self playerViewController];
     if (playerViewController) {
         // Get the current time of the video
@@ -176,7 +177,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 }
 
 %new(v@:@)
-- (void)didPressYouTimeStamp {
+- (void)didPressYouTimeStamp:(id)arg {
     YTPlayerViewController *playerViewController = [self playerViewController];
     if (playerViewController) {
         // Get the current time of the video
