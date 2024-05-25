@@ -117,7 +117,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         CGFloat currentTime = playerViewController.currentVideoMediaTime;
         NSInteger timeInterval = (NSInteger)currentTime;
 
-
         // Create a link using the video ID and the timestamp
         if (playerViewController.currentVideoID) {
             NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
@@ -126,7 +125,6 @@ static UIImage *timestampImage(NSString *qualityLabel) {
             // Replace ?si=%@ with ?t=%@ in the modified URL - @arichornlover
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
             modifiedURL = [modifiedURL stringByReplacingOccurrencesOfString:@"?si=%@" withString:@"?t=%@"];
-
 
             // Copy the link to clipboard
             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -188,7 +186,10 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         if (playerViewController.currentVideoID) {
             NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
             NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
+
+            // Replace ?si=%@ with ?t=%@ in the modified URL - @arichornlover
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
+            modifiedURL = [modifiedURL stringByReplacingOccurrencesOfString:@"?si=%@" withString:@"?t=%@"];
 
             // Copy the link to clipboard
             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
