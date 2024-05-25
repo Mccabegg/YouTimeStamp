@@ -143,87 +143,87 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 %end
 
-// %hook YTMainAppVideoPlayerOverlayViewController
+%hook YTMainAppVideoPlayerOverlayViewController
 
-// - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
-//     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-//     NSString *timestampString = [NSString stringWithFormat:@"?t=%@", timestamp];
-//     return [videoId stringByAppendingString:timestampString];
-// }
-
-// %end
+- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+    NSString *timestampString = [NSString stringWithFormat:@"?t=%@", timestamp];
+    return [videoId stringByAppendingString:timestampString];
+}
 
 %end
 
-// %group Bottom
+%end
 
-// %hook YTInlinePlayerBarContainerView
+%group Bottom
 
-// %property (retain, nonatomic) YTQTMButton *timestampButton;
+%hook YTInlinePlayerBarContainerView
 
-// - (id)init {
-//     self = %orig;
-//     self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
-//     return self;
-// }
+%property (retain, nonatomic) YTQTMButton *timestampButton;
 
-// - (YTQTMButton *)button:(NSString *)tweakId {
-//     return [tweakId isEqualToString:TweakKey] ? self.timestampButton : %orig;
-// }
+- (id)init {
+    self = %orig;
+    self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
+    return self;
+}
 
-// - (UIImage *)buttonImage:(NSString *)tweakId {
-//     return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
-// }
+- (YTQTMButton *)button:(NSString *)tweakId {
+    return [tweakId isEqualToString:TweakKey] ? self.timestampButton : %orig;
+}
 
-// %new(v@:@)
-// - (void)didPressYouTimeStamp {
-//     YTPlayerViewController *playerViewController = [self playerViewController];
-//     if (playerViewController) {
-//         // Get the current time of the video
-//         CGFloat currentTime = playerViewController.currentVideoMediaTime;
-//         NSInteger timeInterval = (NSInteger)currentTime;
+- (UIImage *)buttonImage:(NSString *)tweakId {
+    return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
+}
 
-//         // Create a link using the video ID and the timestamp
-//         if (playerViewController.currentVideoID) {
-//             NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
-//             NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
-//             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
+%new(v@:@)
+- (void)didPressYouTimeStamp {
+    YTPlayerViewController *playerViewController = [self playerViewController];
+    if (playerViewController) {
+        // Get the current time of the video
+        CGFloat currentTime = playerViewController.currentVideoMediaTime;
+        NSInteger timeInterval = (NSInteger)currentTime;
 
-//             // Copy the link to clipboard
-//             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//             [pasteboard setString:modifiedURL];
-//             // Show a snackbar to inform the user
-//             [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
+        // Create a link using the video ID and the timestamp
+        if (playerViewController.currentVideoID) {
+            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
+            NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
+            NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
 
-//         } else {
-//             NSLog(@"No video ID available");
-//         }
-//     } else {
-//         NSLog(@"View controller not found");
-//     }
-// }
+            // Copy the link to clipboard
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            [pasteboard setString:modifiedURL];
+            // Show a snackbar to inform the user
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
 
-// - (void)copyURLToClipboard:(NSString *)modifiedURL {
-//     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//     [pasteboard setString:modifiedURL];
-// }
+        } else {
+            NSLog(@"No video ID available");
+        }
+    } else {
+        NSLog(@"View controller not found");
+    }
+}
 
-// %end
+- (void)copyURLToClipboard:(NSString *)modifiedURL {
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:modifiedURL];
+}
 
-// %hook YTMainAppVideoPlayerOverlayViewController
+%end
 
-// - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
-//     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-//     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
-//     return [videoId stringByAppendingString:timestampString];
-// }
+%hook YTMainAppVideoPlayerOverlayViewController
 
-// %end
+- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+    return [videoId stringByAppendingString:timestampString];
+}
 
-// %end
+%end
+
+%end
 
 %ctor {
     initYTVideoOverlay(TweakKey);
     %init(Top);
-    // %init(Bottom);
+    %init(Bottom);
 }
