@@ -132,7 +132,11 @@ static UIImage *timestampImage(NSString *qualityLabel) {
             NSLog(@"bhackel - Video ID: %@", videoId);
             NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
             NSLog(@"bhackel - Timestamp String: %@", timestampString);
+
+            // Replace ?si=%@ with ?t=%@ in the modified URL - @arichornlover
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
+            modifiedURL = [modifiedURL stringByReplacingOccurrencesOfString:@"?si=%@" withString:@"?t=%@"];
+
             NSLog(@"bhackel - Modified URL: %@", modifiedURL);
 
             // Copy the link to clipboard
@@ -156,7 +160,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 // - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
 //     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-//     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+//     NSString *timestampString = [NSString stringWithFormat:@"?t=%@", timestamp];
 //     return [videoId stringByAppendingString:timestampString];
 // }
 
