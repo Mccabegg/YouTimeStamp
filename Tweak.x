@@ -17,6 +17,7 @@
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 @property (nonatomic, strong) YTLabel *currentTimeLabel;
 @property (nonatomic, copy) NSString *videoShareURL;
+@property (nonatomic, assign) YTPlayerViewController *playerViewController;
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
 - (void)shareURLWithTimestamp:(NSString *)timestamp;
@@ -29,6 +30,7 @@
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 @property (nonatomic, strong) YTLabel *currentTimeLabel;
 @property (nonatomic, copy) NSString *videoShareURL;
+@property (nonatomic, assign) YTPlayerViewController *playerViewController;
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
 - (void)shareURLWithTimestamp:(NSString *)timestamp;
@@ -40,6 +42,11 @@
 @interface YTMainAppVideoPlayerOverlayViewController (YouTimeStamp)
 @property (nonatomic, copy) NSString *videoID;
 - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp;
+@end
+
+@interface YTPlayerViewController (YouTimeStamp)
+@property (nonatomic, assign) CGFloat currentVideoMediaTime;
+@property (nonatomic, assign) NSString *currentVideoID;
 @end
 
 // For displaying snackbars - @theRealfoxster
@@ -60,6 +67,7 @@
 //
 
 NSBundle *YouTimeStampBundle() {
+    NSLog(@"bhackel - YouTimeStampBundle called");
     static NSBundle *bundle = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -83,130 +91,148 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 %property (retain, nonatomic) YTQTMButton *timestampButton;
 
 - (id)initWithDelegate:(id)delegate {
+    NSLog(@"bhackel - initWithDelegate: called");
     self = %orig;
     self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
     return self;
 }
 
 - (id)initWithDelegate:(id)delegate autoplaySwitchEnabled:(BOOL)autoplaySwitchEnabled {
+    NSLog(@"bhackel - initWithDelegate:autoplaySwitchEnabled: called");
     self = %orig;
     self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
     return self;
 }
 
 - (YTQTMButton *)button:(NSString *)tweakId {
+    NSLog(@"bhackel - button: called");
     return [tweakId isEqualToString:TweakKey] ? self.timestampButton : %orig;
 }
 
 - (UIImage *)buttonImage:(NSString *)tweakId {
+    NSLog(@"bhackel - buttonImage: called");
     return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
 }
 
 - (void)didPressYouTimeStamp {
-    AVPlayer *player = [self getPlayer];
-    if (player) {
-        CMTime currentTime = player.currentTime;
-        NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+    NSLog(@"bhackel - Button Pressed");
+    YTPlayerViewController *playerViewController = [self playerViewController];
+    if (playerViewController) {
+        NSLog(@"bhackel - Player View Controller Found");
+        // Get the current time of the video
+        CGFloat currentTime = playerViewController.currentVideoMediaTime;
+        NSInteger timeInterval = (NSInteger)currentTime;
 
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController;
-        
-        if (overlayViewController.videoID) {
-            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", overlayViewController.videoID];
-            NSString *timestampString = [NSString stringWithFormat:@"?t=%ld", (long)timeInterval];
+        NSLog(@"bhackel - Current Time: %f", currentTime);
+
+        // Create a link using the video ID and the timestamp
+        if (playerViewController.currentVideoID) {
+            NSLog(@"bhackel - Video ID Found");
+            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
+            NSLog(@"bhackel - Video ID: %@", videoId);
+            NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
+            NSLog(@"bhackel - Timestamp String: %@", timestampString);
             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
-            
-            [self shareURLWithTimestamp:modifiedURL];
+            NSLog(@"bhackel - Modified URL: %@", modifiedURL);
+
+            // Copy the link to clipboard
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            [pasteboard setString:modifiedURL];
+            NSLog(@"bhackel - URL Copied to Clipboard");
+            // Show a snackbar to inform the user
+            [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
+
         } else {
             NSLog(@"No video ID available");
         }
     } else {
-        NSLog(@"AVPlayer instance is not available");
+        NSLog(@"View controller not found");
     }
 }
 
-- (void)copyURLToClipboard:(NSString *)modifiedURL {
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL];
-}
+%end
+
+// %hook YTMainAppVideoPlayerOverlayViewController
+
+// - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+//     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+//     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+//     return [videoId stringByAppendingString:timestampString];
+// }
+
+// %end
 
 %end
 
-%hook YTMainAppVideoPlayerOverlayViewController
+// %group Bottom
 
-- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
-    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
-    return [videoId stringByAppendingString:timestampString];
-}
+// %hook YTInlinePlayerBarContainerView
 
-%end
+// %property (retain, nonatomic) YTQTMButton *timestampButton;
 
-%end
+// - (id)init {
+//     self = %orig;
+//     self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
+//     return self;
+// }
 
-%group Bottom
+// - (YTQTMButton *)button:(NSString *)tweakId {
+//     return [tweakId isEqualToString:TweakKey] ? self.timestampButton : %orig;
+// }
 
-%hook YTInlinePlayerBarContainerView
+// - (UIImage *)buttonImage:(NSString *)tweakId {
+//     return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
+// }
 
-%property (retain, nonatomic) YTQTMButton *timestampButton;
+// %new(v@:@)
+// - (void)didPressYouTimeStamp {
+//     YTPlayerViewController *playerViewController = [self playerViewController];
+//     if (playerViewController) {
+//         // Get the current time of the video
+//         CGFloat currentTime = playerViewController.currentVideoMediaTime;
+//         NSInteger timeInterval = (NSInteger)currentTime;
 
-- (id)init {
-    self = %orig;
-    self.timestampButton = [self createButton:TweakKey accessibilityLabel:@"Copy Timestamp" selector:@selector(didPressYouTimeStamp:)];
-    return self;
-}
+//         // Create a link using the video ID and the timestamp
+//         if (playerViewController.currentVideoID) {
+//             NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", playerViewController.currentVideoID];
+//             NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
+//             NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
 
-- (YTQTMButton *)button:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? self.timestampButton : %orig;
-}
+//             // Copy the link to clipboard
+//             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//             [pasteboard setString:modifiedURL];
+//             // Show a snackbar to inform the user
+//             [[%c(GOOHUDManagerInternal) sharedInstance] showMessageMainThread:[%c(YTHUDMessage) messageWithText:@"URL copied to clipboard"]];
 
-- (UIImage *)buttonImage:(NSString *)tweakId {
-    return [tweakId isEqualToString:TweakKey] ? timestampImage(@"3") : %orig;
-}
+//         } else {
+//             NSLog(@"No video ID available");
+//         }
+//     } else {
+//         NSLog(@"View controller not found");
+//     }
+// }
 
-%new(v@:@)
-- (void)didPressYouTimeStamp {
-    AVPlayer *player = [self getPlayer];
-    if (player) {
-        CMTime currentTime = player.currentTime;
-        NSTimeInterval timeInterval = CMTimeGetSeconds(currentTime);
+// - (void)copyURLToClipboard:(NSString *)modifiedURL {
+//     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//     [pasteboard setString:modifiedURL];
+// }
 
-        YTMainAppVideoPlayerOverlayViewController *overlayViewController;
-        
-        if (overlayViewController.videoID) {
-            NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", overlayViewController.videoID];
-            NSString *timestampString = [NSString stringWithFormat:@"?t=%ld", (long)timeInterval];
-            NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
-            
-            [self shareURLWithTimestamp:modifiedURL];
-        } else {
-            NSLog(@"No video ID available");
-        }
-    } else {
-        NSLog(@"AVPlayer instance is not available");
-    }
-}
+// %end
 
-- (void)copyURLToClipboard:(NSString *)modifiedURL {
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [pasteboard setString:modifiedURL];
-}
+// %hook YTMainAppVideoPlayerOverlayViewController
 
-%end
+// - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
+//     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
+//     NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+//     return [videoId stringByAppendingString:timestampString];
+// }
 
-%hook YTMainAppVideoPlayerOverlayViewController
+// %end
 
-- (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
-    NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
-    return [videoId stringByAppendingString:timestampString];
-}
-
-%end
-
-%end
+// %end
 
 %ctor {
     initYTVideoOverlay(TweakKey);
     %init(Top);
-    %init(Bottom);
+    // %init(Bottom);
 }
