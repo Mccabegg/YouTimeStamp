@@ -62,6 +62,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     return [%c(QTMIcon) tintImage:[UIImage imageNamed:[NSString stringWithFormat:@"Timestamp@%@", qualityLabel] inBundle: YouTimeStampBundle() compatibleWithTraitCollection:nil] color:[%c(YTColor) white1]];
 }
 
+%group Main
 %hook YTPlayerViewController
 // New method to copy the URL with the timestamp to the clipboard - @arichornlover
 %new
@@ -85,6 +86,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSLog(@"No video ID available");
     }
 }
+%end
 %end
 
 /**
@@ -168,6 +170,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 %ctor {
     initYTVideoOverlay(TweakKey);
+    %init(Main);
     %init(Top);
     %init(Bottom);
 }
