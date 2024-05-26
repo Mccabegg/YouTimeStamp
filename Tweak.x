@@ -7,8 +7,19 @@
 #import "../YouTubeHeader/YTColor.h"
 #import "../YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h"
 #import "../YouTubeHeader/YTMainAppControlsOverlayView.h"
+#import "../YouTubeHeader/YTPlayerViewController.h"
 
 #define TweakKey @"YouTimeStamp"
+
+@interface YTMainAppVideoPlayerOverlayViewController (YouTimeStamp)
+@property (nonatomic, assign) YTPlayerViewController *parentViewController;
+@end
+
+@interface YTPlayerViewController (YouTimeStamp)
+@property (nonatomic, assign) CGFloat currentVideoMediaTime;
+@property (nonatomic, assign) NSString *currentVideoID;
+- (void)didPressYouTimeStamp;
+@end
 
 @interface YTMainAppControlsOverlayView (YouTimeStamp)
 @property (retain, nonatomic) YTQTMButton *timestampButton;
@@ -16,8 +27,7 @@
 - (void)didPressYouTimeStamp:(id)arg;
 @end
 
-@interface YTInlinePlayerBarController (YouTimeStamp)
-@property (nonatomic, assign) YTPlayerViewController *parentViewController;
+@interface YTInlinePlayerBarController : NSObject
 @end
 
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
@@ -26,11 +36,6 @@
 - (void)didPressYouTimeStamp:(id)arg;
 @end
 
-@interface YTPlayerViewController (YouTimeStamp)
-@property (nonatomic, assign) CGFloat currentVideoMediaTime;
-@property (nonatomic, assign) NSString *currentVideoID;
-- (void)didPressYouTimeStamp;
-@end
 
 // For displaying snackbars - @theRealfoxster
 @interface YTHUDMessage : NSObject
@@ -79,6 +84,8 @@ static UIImage *timestampImage(NSString *qualityLabel) {
         NSString *videoId = [NSString stringWithFormat:@"https://youtu.be/%@", self.currentVideoID];
         NSString *timestampString = [NSString stringWithFormat:@"?t=%.0ld", (long)timeInterval];
 
+        // Create link
+        NSString *modifiedURL = [videoId stringByAppendingString:timestampString];
         // Copy the link to clipboard
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         [pasteboard setString:modifiedURL];
@@ -126,7 +133,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     // directly accessible in the self.playerViewController property
     YTPlayerViewController *playerViewController = self.playerViewController;
     if (playerViewController) {
-        playerViewController.didPressYouTimeStamp();
+        [playerViewController didPressYouTimeStamp];
     }
 }
 
@@ -164,7 +171,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
     YTPlayerViewController *parentViewController = _delegate.parentViewController;
     // Call our custom method in the YTPlayerViewController class
     if (parentViewController) {
-        parentViewController.didPressYouTimeStamp();
+        [parentViewController didPressYouTimeStamp];
     }
 }
 
