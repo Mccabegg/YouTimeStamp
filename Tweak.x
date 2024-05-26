@@ -30,7 +30,7 @@
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 @property (nonatomic, strong) YTLabel *currentTimeLabel;
 @property (nonatomic, copy) NSString *videoShareURL;
-@property (nonatomic, assign) YTPlayerViewController *playerViewController;
+@property (nonatomic, strong) YTPlayerViewController *playerViewController;
 - (AVPlayer *)getPlayer;
 - (void)didPressYouTimeStamp:(id)arg;
 - (void)shareURLWithTimestamp:(NSString *)timestamp;
@@ -216,7 +216,7 @@ static UIImage *timestampImage(NSString *qualityLabel) {
 
 - (NSString *)generateModifiedURLWithTimestamp:(NSString *)timestamp {
     NSString *videoId = [NSString stringWithFormat:@"http://youtu.be/%@", self.videoID];
-    NSString *timestampString = [NSString stringWithFormat:@"&t=%@", timestamp];
+    NSString *timestampString = [NSString stringWithFormat:@"?t=%@", timestamp];
     return [videoId stringByAppendingString:timestampString];
 }
 
