@@ -7,7 +7,6 @@
 #import "../YouTubeHeader/YTColor.h"
 #import "../YouTubeHeader/YTMainAppVideoPlayerOverlayViewController.h"
 #import "../YouTubeHeader/YTMainAppControlsOverlayView.h"
-#import "../YouTubeHeader/YTInlinePlayerBarController.h"
 
 #define TweakKey @"YouTimeStamp"
 
@@ -15,6 +14,10 @@
 @property (retain, nonatomic) YTQTMButton *timestampButton;
 @property (nonatomic, assign) YTPlayerViewController *playerViewController;
 - (void)didPressYouTimeStamp:(id)arg;
+@end
+
+@interface YTInlinePlayerBarController (YouTimeStamp)
+@property (nonatomic, assign) YTPlayerViewController *parentViewController;
 @end
 
 @interface YTInlinePlayerBarContainerView (YouTimeStamp)
